@@ -1,5 +1,5 @@
-import connectionDb from "@/config/database";
-import { Book } from "@/protocols/book";
+import connectionDb from "../config/database.js";
+import { Book } from "../protocols/book.js";
 import { QueryResult } from "pg";
 
 async function create(book: Book) {
@@ -21,7 +21,7 @@ async function findByName(name: string): Promise<QueryResult<Book>> {
         [name]
     );
 }
-export type BookItem = Omit<Book,"userId"> & {createdBy:string}
+export type BookItem = Omit<Book, "userId"> & { createdBy: string }
 
 async function findAll(): Promise<QueryResult<BookItem>> {
     return await connectionDb.query(
@@ -36,7 +36,7 @@ async function findAll(): Promise<QueryResult<BookItem>> {
     );
 }
 
-async function findById(id:number):Promise<QueryResult<Book>> {
+async function findById(id: number): Promise<QueryResult<Book>> {
     return await connectionDb.query(
         `
           SELECT * FROM books 
@@ -46,7 +46,7 @@ async function findById(id:number):Promise<QueryResult<Book>> {
     );
 }
 
-async function updateStatusBook(status:boolean, bookId:number): Promise<void> {
+async function updateStatusBook(status: boolean, bookId: number): Promise<void> {
     await connectionDb.query(
         `
       UPDATE books
@@ -57,7 +57,7 @@ async function updateStatusBook(status:boolean, bookId:number): Promise<void> {
     );
 }
 
-async function takeBook(userId:number, bookId:number): Promise<void> {
+async function takeBook(userId: number, bookId: number): Promise<void> {
     await connectionDb.query(
         `
       INSERT INTO "myBooks" ("userId", "bookId")
@@ -66,12 +66,22 @@ async function takeBook(userId:number, bookId:number): Promise<void> {
         [userId, bookId]
     );
 }
-export type MyBook = {
-    user_name:string,
-    book_name:string,
-    book_author:string,
+
+async function returnBook(userId: number, bookId: number): Promise<QueryResult> {
+    return await connectionDb.query(
+        `
+      DELETE FROM "myBooks" where "userId"=$1 AND "bookId"=$2;
+    `,
+        [userId, bookId]
+    );
 }
-async function findAllMyBooks(userId:number): Promise<QueryResult<MyBook>> {
+
+export type MyBook = {
+    user_name: string,
+    book_name: string,
+    book_author: string,
+}
+async function findAllMyBooks(userId: number): Promise<QueryResult<MyBook>> {
     return await connectionDb.query(
         `
     SELECT 
@@ -93,6 +103,7 @@ export default {
     findAll,
     findById,
     takeBook,
+    returnBook,
     updateStatusBook,
     findAllMyBooks
 };

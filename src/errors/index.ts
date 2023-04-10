@@ -1,16 +1,11 @@
-
-type error = {
-    name:string,
-    message:string
-}
-function conflictError(message: string): error {
+function conflictError(message: string): Error {
     return {
         name: "ConflictError",
         message,
     };
 }
 
-function duplicatedEmailError(email: string): error & {email:string} {
+function duplicatedEmailError(email: string): Error & {email:string} {
     return {
         name: "DuplicatedEmailError",
         message: "There is already an user with given email",
@@ -18,21 +13,21 @@ function duplicatedEmailError(email: string): error & {email:string} {
     };
 }
 
-function unauthorizedError(): error {
+function unauthorizedError(): Error {
     return {
         name: "UnauthorizedError",
         message: "You must be signed in to continue",
     };
 }
 
-function notFoundError(): error {
+function notFoundError(): Error {
     return {
         name: "NotFoundError",
         message: "No result for this search!",
     };
 }
 
-function invalidCredentialsError(): error {
+function invalidCredentialsError(): Error {
     return {
         name: "InvalidCredentialsError",
         message: "Email or password are incorrect",

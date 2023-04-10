@@ -1,6 +1,6 @@
-import bookServices from "@/services/bookServices";
+import httpStatus from "http-status";
+import bookServices from "../services/bookServices.js";
 import { NextFunction, Request, Response } from "express";
-
 
 async function create(req: Request, res: Response, next: NextFunction) {
     const { name, author } = req.body
@@ -9,6 +9,7 @@ async function create(req: Request, res: Response, next: NextFunction) {
 
     try {
         await bookServices.create({ name, author, userId: id })
+        return res.sendStatus(201);
     } catch (error) {
         next(error)
     }
@@ -34,6 +35,16 @@ async function takeBook(req: Request, res: Response, next: NextFunction) {
         next(err);
     }
 }
+async function returnBook(req: Request, res: Response, next: NextFunction) {
+    const { id } = res.locals.user;
+    const bookId = +req.params.id;
+    try {
+        await bookServices.returnBook(id, bookId);
+        return res.sendStatus(httpStatus.OK);
+    } catch (err) {
+        next(err);
+    }
+}
 
 async function findAllMyBooks(req: Request, res: Response, next: NextFunction) {
     const { id } = res.locals.user;
@@ -49,5 +60,6 @@ export default {
     create,
     findAll,
     takeBook,
+    returnBook,
     findAllMyBooks
 }
